@@ -23,7 +23,6 @@ export const registerController = async (req, res, next) => {
             message: "User Created Successfully",
             user,
         });
-
     } catch (error) {
         next(error);
     }
