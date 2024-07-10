@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import JWT from "jsonwebtoken";
 //schema
 const userSchema = new mongoose.Schema(
     {
@@ -21,7 +22,7 @@ const userSchema = new mongoose.Schema(
         type: String,
         required: [true, "password is require"],
         minlength: [6, "Password length should be greater than 6 character"],
-        // select: true,
+        select: true,
       },
       location: {
         type: String,
@@ -35,4 +36,11 @@ const userSchema = new mongoose.Schema(
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
   });
+
+  //JSON WEBTOKEN
+  userSchema.methods.createJWT = function () {
+    return JWT.sign({ userId: this._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+  };
 export default mongoose.model("User", userSchema);
