@@ -31,3 +31,29 @@ export const registerController = async (req, res, next) => {
         token,
     });
 };
+
+export const loginController = async (req, res, next) => {
+    const { email, password } = req.body;
+    //validation
+    if (!email || !password) {
+        next("Please Provide All Fields");
+    }
+    //find user by email
+    const user = await userModel.findOne({ email }).select("+password");
+    if (!user) {
+        next("Invalid Useraname or password");
+    }
+    //compare password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+        next("Invalid Useraname or password");
+    }
+    user.password = undefined;
+    const token = user.createJWT();
+    res.status(200).json({
+        success: true,
+        message: "Login SUccessfully",
+        user,
+        token,
+    });
+};
