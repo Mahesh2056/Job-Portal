@@ -1,5 +1,6 @@
 import jobsModel from "../models/jobsModel.js";
 import mongoose from "mongoose";
+import moment from "moment";
 
 // ====== CREATE JOB ======
 export const createJobcontroller = async (req, res, next) => {
@@ -107,7 +108,18 @@ export const jobStatsController = async (req, res) => {
             },
         },
     ]);
-
+    monthlyApplication = monthlyApplication.map((item) =>  {
+        const {
+            _id: { year, month },
+            count,
+        } = item;
+        const date = moment()
+          .month(month - 1)
+          .year(year)
+          .format("MMM Y");
+        return { date, count };
+    })
+    .reverse();
     res
     .status(200)
     .json({ totlaJob: stats.length, defaultStats,  monthlyApplication });
